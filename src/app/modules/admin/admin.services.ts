@@ -53,29 +53,21 @@ const getSingleBookIntoDB = async (id: string) => {
 };
 
 //Get Single Book
-const updateBookIntoDB = async (id: string) => {
-  const book = await Book.findById(id);
-
-  if (!book) {
+const updateBookIntoDB = async (id: string, payload: Record<string, any>) => {
+  const result = await Book.findByIdAndUpdate(id, payload, { new: true });
+  if (!result) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Book is not Found!');
   }
 
-  const result = await Book.findByIdAndUpdate(
-    id,
-    { isBlocked: true },
-    { new: true },
-  );
   return result;
 };
 
 //delete Book
 const deleteBookIntoDB = async (id: string) => {
-  const book = await Book.findById(id);
-
-  if (!book) {
+  const result = await Book.findByIdAndDelete(id);
+  if (!result) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Book is not found!');
   }
-  const result = await Book.findByIdAndDelete(id);
   return result;
 };
 

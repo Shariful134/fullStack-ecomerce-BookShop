@@ -56,7 +56,8 @@ const getSingleBook: RequestHandler = catchAsync(async (req, res, next) => {
 //update Book
 const updateBook: RequestHandler = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const result = await bookServices.updateBookIntoDB(id);
+
+  const result = await bookServices.updateBookIntoDB(id, req.body);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,

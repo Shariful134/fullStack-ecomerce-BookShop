@@ -21,12 +21,12 @@ router.post(
   bookController.createBook,
 );
 
-//get AllBooks
+//get Book
 router.get('/allbooks', bookController.getAllBooks);
 router.get('/book/:id', bookController.getSingleBook);
 
 //update Book
-router.put('/book/:id',auth(USER_ROLE.admin) bookController.updateBook);
+router.put('/book/:id', auth(USER_ROLE.admin), bookController.updateBook);
 //delete Book
 router.delete(
   '/delete-book/:id',
