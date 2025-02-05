@@ -1,4 +1,5 @@
 import { Schema, model, Types } from 'mongoose';
+import { TOrder } from './order.interface';
 
 const orderSchema = new Schema(
   {
@@ -25,16 +26,4 @@ const orderSchema = new Schema(
   },
   { timestamps: true },
 );
-
-// Exporting the Order model
-const Order = model('Order', OrderSchema);
-
-// Exporting the type
-export type OrderType = {
-  email: string;
-  product: Types.ObjectId;
-  quantity: number;
-  totalPrice: number;
-};
-
-export default Order;
+export const Order = model<TOrder>('Order', orderSchema);

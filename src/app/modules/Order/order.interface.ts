@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 
-export type Order = {
+export type TOrder = {
   email: string;
   product: ObjectId;
   quantity: number;
