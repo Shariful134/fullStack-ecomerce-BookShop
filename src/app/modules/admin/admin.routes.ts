@@ -13,6 +13,21 @@ router.patch(
   bookController.blockedUserController,
 );
 
+//get all users
+router.get(
+  '/get-users',
+  auth(USER_ROLE.admin),
+
+  bookController.getAllUsers,
+);
+
+router.get(
+  '/single-user/:userId',
+  auth(USER_ROLE.admin),
+
+  bookController.getSingleUser,
+);
+
 //create Book
 router.post(
   '/create-book',

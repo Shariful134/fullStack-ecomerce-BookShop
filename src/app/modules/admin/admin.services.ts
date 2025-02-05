@@ -29,6 +29,23 @@ const blockedUserByAdminIntoDB = async (id: string) => {
   return result;
 };
 
+//Get All Users
+const getAllUsersIntoDB = async () => {
+  const result = await User.find();
+
+  const users = result?.filter((item) => item.role === 'user');
+  return users;
+};
+
+const getSingleUserIntoDB = async (id: string) => {
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User is not Found!');
+  }
+  return user;
+};
+
 //create Book
 const createBookIntoDB = async (payload: TBook) => {
   const result = await Book.create(payload);
@@ -73,6 +90,8 @@ const deleteBookIntoDB = async (id: string) => {
 
 export const bookServices = {
   blockedUserByAdminIntoDB,
+  getAllUsersIntoDB,
+  getSingleUserIntoDB,
   createBookIntoDB,
   getAllBooksIntoDB,
   getSingleBookIntoDB,

@@ -30,6 +30,28 @@ const createBook: RequestHandler = catchAsync(async (req, res, next) => {
   });
 });
 
+//get All Users
+const getAllUsers: RequestHandler = catchAsync(async (req, res, next) => {
+  const result = await bookServices.getAllUsersIntoDB();
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Users Retrived Successfully!',
+    data: result,
+  });
+});
+
+const getSingleUser: RequestHandler = catchAsync(async (req, res, next) => {
+  const { userId } = req.params;
+  const result = await bookServices.getSingleUserIntoDB(userId);
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Users Retrived Successfully!',
+    data: result,
+  });
+});
+
 //get All Books
 const getAllBooks: RequestHandler = catchAsync(async (req, res, next) => {
   const result = await bookServices.getAllBooksIntoDB();
@@ -80,6 +102,8 @@ const deleteBook: RequestHandler = catchAsync(async (req, res, next) => {
 
 export const bookController = {
   blockedUserController,
+  getAllUsers,
+  getSingleUser,
   createBook,
   deleteBook,
   getAllBooks,
