@@ -13,12 +13,32 @@ router.post(
   orderControllers.createOrder,
 );
 
+//get Orders
+router.get(
+  '/getOrders',
+  auth(USER_ROLE.user, USER_ROLE.admin),
+  orderControllers.getOrders,
+);
+
+router.get(
+  '/getOrder/:orderId',
+  auth(USER_ROLE.user, USER_ROLE.admin),
+  orderControllers.getSingleOrder,
+);
+
 //update order
 router.put(
-  '/product/:orderId',
+  '/update-order/:orderId',
   auth(USER_ROLE.user),
   validateRequest(orderValidationSchemas.orderUpdateValidationSchema),
   orderControllers.updateOrder,
+);
+
+//delete order
+router.delete(
+  '/delete-order/:orderId',
+  auth(USER_ROLE.user),
+  orderControllers.deleteOrder,
 );
 
 export const OrderRoutes = router;

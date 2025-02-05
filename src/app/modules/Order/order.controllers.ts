@@ -15,7 +15,29 @@ const createOrder: RequestHandler = catchAsync(async (req, res, next) => {
   });
 });
 
-//update ordaer
+//get orders
+const getOrders: RequestHandler = catchAsync(async (req, res, next) => {
+  const result = await orderServices.getOrdersOrderIntoDB();
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Order Retrieved Successful',
+    data: result,
+  });
+});
+
+const getSingleOrder: RequestHandler = catchAsync(async (req, res, next) => {
+  const { orderId } = req.params;
+  const result = await orderServices.getSingleOrderIntoDB(orderId);
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Order Retrieved Successful',
+    data: result,
+  });
+});
+
+//update order
 const updateOrder: RequestHandler = catchAsync(async (req, res, next) => {
   const { orderId } = req.params;
   const result = await orderServices.updateOrderIntoDB(orderId, req.body);
@@ -27,7 +49,22 @@ const updateOrder: RequestHandler = catchAsync(async (req, res, next) => {
   });
 });
 
+//delete order
+const deleteOrder: RequestHandler = catchAsync(async (req, res, next) => {
+  const { orderId } = req.params;
+  const result = await orderServices.deleteOrderIntoDB(orderId);
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Order Deleted Successfully',
+    data: result,
+  });
+});
+
 export const orderControllers = {
   createOrder,
   updateOrder,
+  deleteOrder,
+  getOrders,
+  getSingleOrder,
 };
