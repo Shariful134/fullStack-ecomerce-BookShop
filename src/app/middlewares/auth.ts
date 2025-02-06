@@ -15,29 +15,15 @@ const auth = (...requiredRoles: TUserRole[]) => {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'Your are not Authorized!');
     }
 
-    //check if the token is valid
-    jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-      function (error, decoded) {
-        if (error) {
-          throw new AppError(
-            StatusCodes.UNAUTHORIZED,
-            'Your are not Authorized!',
-          );
-        }
+    //new add token verify
+    const decoded = jwt.verify(token, config.jwt_access_secret as string);
 
-        const role = (decoded as JwtPayload)?.data?.role;
-        if (requiredRoles && !requiredRoles.includes(role)) {
-          throw new AppError(
-            StatusCodes.UNAUTHORIZED,
-            'Your are not Authorized!',
-          );
-        }
-        req.user = decoded as JwtPayload;
-        next();
-      },
-    );
+    const role = (decoded as JwtPayload)?.data?.role;
+    if (requiredRoles && !requiredRoles.includes(role)) {
+      throw new AppError(StatusCodes.UNAUTHORIZED, 'Your are not Authorized!');
+    }
+    req.user = decoded as JwtPayload;
+    next();
   });
 };
 

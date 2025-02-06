@@ -3,6 +3,7 @@ import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TUserLogin } from './auth.interface';
 import jwt from 'jsonwebtoken';
+
 import config from '../../config';
 
 //login User
@@ -25,7 +26,7 @@ const loginUserIntoDB = async (payload: TUserLogin) => {
     throw new AppError(StatusCodes.UNAUTHORIZED, 'Password does not match!');
   }
 
-  //creating a token and sent to the client side
+  // creating a token and sent to the client side
   const jwtUserData = {
     userEmail: user?.email,
     role: user?.role,
@@ -37,10 +38,18 @@ const loginUserIntoDB = async (payload: TUserLogin) => {
       data: jwtUserData,
     },
     config.jwt_access_secret as string,
+    { expiresIn: '7d' },
+  );
+
+  const refreshToken = jwt.sign(
+    {
+      data: jwtUserData,
+    },
+    config.jwt_access_secret as string,
     { expiresIn: '10d' },
   );
 
-  return { token: accessToken };
+  return { accessToken, refreshToken };
 };
 
 export const authServices = {

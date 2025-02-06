@@ -3,6 +3,11 @@ import AppError from '../../errors/AppError';
 import { Book } from '../Book/book.model';
 import { TOrder } from './order.interface';
 import { Order } from './order.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import {
+  bookSearchAbleFields,
+  orderSearchAbleFields,
+} from '../Book/book.constant';
 
 //creating order
 const createOrderIntoDB = async (payload: TOrder) => {
@@ -36,11 +41,15 @@ const createOrderIntoDB = async (payload: TOrder) => {
 };
 
 //get orders
-const getOrdersIntoDB = async () => {
-  const order = await Order.find();
+const getOrdersIntoDB = async (query: Record<string, any>) => {
+  const blogQuery = new QueryBuilder(Order.find().populate('product'), query)
+    .search(orderSearchAbleFields)
+    .filter()
+    .sort();
+  const order = await blogQuery.modelQuery;
 
   //checking Product is exists
-  if (!order) {
+  if (order.length === 0) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Order is not Found!');
   }
 
@@ -48,7 +57,7 @@ const getOrdersIntoDB = async () => {
 };
 
 const getSingleOrderIntoDB = async (id: string) => {
-  const order = await Order.findById(id);
+  const order = await Order.findById(id).populate('product');
 
   //checking Product is exists
   if (!order) {

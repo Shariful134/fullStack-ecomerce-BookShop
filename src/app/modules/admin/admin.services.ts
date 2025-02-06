@@ -3,6 +3,8 @@ import AppError from '../../errors/AppError';
 import { TBook } from '../Book/book.interface';
 import { Book } from '../Book/book.model';
 import { User } from '../user/user.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { bookSearchAbleFields } from '../Book/book.constant';
 
 ///blocked user
 const blockedUserByAdminIntoDB = async (id: string) => {
@@ -53,8 +55,15 @@ const createBookIntoDB = async (payload: TBook) => {
 };
 
 //Get All Books
-const getAllBooksIntoDB = async () => {
-  const result = await Book.find();
+const getAllBooksIntoDB = async (query: Record<string, any>) => {
+  const blogQuery = new QueryBuilder(Book.find(), query)
+    .search(bookSearchAbleFields)
+    .filter()
+    .sort();
+  const result = await blogQuery.modelQuery;
+  if (!result.length) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Book is not Found!');
+  }
   return result;
 };
 

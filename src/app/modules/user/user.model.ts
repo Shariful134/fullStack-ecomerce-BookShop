@@ -14,10 +14,24 @@ const userSchema = new Schema<TUser>(
       type: String,
       required: true,
     },
+    // password: {
+    //   type: String,
+    //   required: true,
+    //   select: 0,
+    // },
     password: {
       type: String,
       required: true,
       select: 0,
+      validate: {
+        validator: function (value: string) {
+          return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(
+            value,
+          );
+        },
+        message:
+          'Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@, $, %, etc.).',
+      },
     },
     role: {
       type: String,

@@ -54,7 +54,7 @@ const getSingleUser: RequestHandler = catchAsync(async (req, res, next) => {
 
 //get All Books
 const getAllBooks: RequestHandler = catchAsync(async (req, res, next) => {
-  const result = await bookServices.getAllBooksIntoDB();
+  const result = await bookServices.getAllBooksIntoDB(req.query);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,

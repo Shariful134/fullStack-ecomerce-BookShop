@@ -41,5 +41,9 @@ router.delete(
   orderControllers.deleteOrder,
 );
 
-router.get('/revenue', orderControllers.calculatePrice);
+router.get(
+  '/revenue',
+  auth(USER_ROLE.user, USER_ROLE.admin),
+  orderControllers.calculatePrice,
+);
 export const OrderRoutes = router;

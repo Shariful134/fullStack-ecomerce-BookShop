@@ -6,6 +6,7 @@ import { orderServices } from './order.services';
 
 //create ordaer
 const createOrder: RequestHandler = catchAsync(async (req, res, next) => {
+  console.log(req.cookies);
   const result = await orderServices.createOrderIntoDB(req.body);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
@@ -17,7 +18,7 @@ const createOrder: RequestHandler = catchAsync(async (req, res, next) => {
 
 //get orders
 const getOrders: RequestHandler = catchAsync(async (req, res, next) => {
-  const result = await orderServices.getOrdersIntoDB();
+  const result = await orderServices.getOrdersIntoDB(req.query);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
