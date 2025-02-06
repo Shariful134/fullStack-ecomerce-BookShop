@@ -8,17 +8,35 @@ import { Order } from './order.model';
 const createOrderIntoDB = async (payload: TOrder) => {
   const product = await Book.findById(payload.product);
 
-  //checking Product is exists
+  //Inventory management logic
   if (!product) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Product is not Found!');
   }
+
+  const inStock = product?.inStock;
+  if (!inStock) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Insufficient stock!');
+  }
+
+  if (product.quantity < payload.quantity) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      `Only ${product.quantity} Products available!`,
+    );
+  }
+
+  product.quantity -= payload.quantity;
+  if (product.quantity === 0) {
+    product.inStock = false;
+  }
+  await product.save();
 
   const result = await Order.create(payload);
   return result;
 };
 
 //get orders
-const getOrdersOrderIntoDB = async () => {
+const getOrdersIntoDB = async () => {
   const order = await Order.find();
 
   //checking Product is exists
@@ -103,7 +121,7 @@ export const orderServices = {
   createOrderIntoDB,
   updateOrderIntoDB,
   deleteOrderIntoDB,
-  getOrdersOrderIntoDB,
+  getOrdersIntoDB,
   getSingleOrderIntoDB,
   calculateAllPrice,
 };

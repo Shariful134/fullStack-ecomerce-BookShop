@@ -17,7 +17,7 @@ const createOrder: RequestHandler = catchAsync(async (req, res, next) => {
 
 //get orders
 const getOrders: RequestHandler = catchAsync(async (req, res, next) => {
-  const result = await orderServices.getOrdersOrderIntoDB();
+  const result = await orderServices.getOrdersIntoDB();
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
