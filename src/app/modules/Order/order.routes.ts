@@ -41,4 +41,5 @@ router.delete(
   orderControllers.deleteOrder,
 );
 
+router.get('/revenue', orderControllers.calculatePrice);
 export const OrderRoutes = router;

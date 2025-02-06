@@ -61,10 +61,23 @@ const deleteOrder: RequestHandler = catchAsync(async (req, res, next) => {
   });
 });
 
+// calculatePrice from the order
+
+const calculatePrice: RequestHandler = catchAsync(async (req, res, next) => {
+  const result = await orderServices.calculateAllPrice();
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Order Reveneu Successfully',
+    data: result,
+  });
+});
+
 export const orderControllers = {
   createOrder,
   updateOrder,
   deleteOrder,
   getOrders,
   getSingleOrder,
+  calculatePrice,
 };

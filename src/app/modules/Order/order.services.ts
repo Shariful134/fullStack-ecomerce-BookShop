@@ -64,10 +64,46 @@ const deleteOrderIntoDB = async (id: string) => {
   return result;
 };
 
+// calculate the all order price in database
+const calculateAllPrice = async () => {
+  const findRevenue = await Order.aggregate([
+    {
+      $lookup: {
+        from: 'books',
+        localField: 'product',
+        foreignField: '_id',
+        as: 'AllbookInfo',
+      },
+    },
+    { $unwind: '$AllbookInfo' },
+    {
+      $project: {
+        price: '$AllbookInfo.price',
+        quantity: 1,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalRevenue: {
+          $sum: {
+            $multiply: ['$price', '$quantity'],
+          },
+        },
+      },
+    },
+  ]);
+
+  const totalRevenue = findRevenue.length > 0 ? findRevenue[0].totalRevenue : 0;
+
+  return { totalRevenue };
+};
+
 export const orderServices = {
   createOrderIntoDB,
   updateOrderIntoDB,
   deleteOrderIntoDB,
   getOrdersOrderIntoDB,
   getSingleOrderIntoDB,
+  calculateAllPrice,
 };
