@@ -4,6 +4,7 @@ import { USER_ROLE } from '../user/user.constant';
 import validateRequest from '../../middlewares/validateRequest';
 import { BookValidationSchemas } from '../Book/book.validation';
 import { bookController } from './admin.controllers';
+
 const router = express.Router();
 
 //blocked user
@@ -24,8 +25,12 @@ router.get(
 router.get(
   '/single-user/:userId',
   auth(USER_ROLE.admin),
-
   bookController.getSingleUser,
+);
+router.delete(
+  '/delete-user/:userId',
+  auth(USER_ROLE.admin),
+  bookController.deleteUser,
 );
 
 //create Book

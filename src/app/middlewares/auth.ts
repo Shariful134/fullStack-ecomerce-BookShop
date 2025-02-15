@@ -6,19 +6,40 @@ import config from '../config';
 import AppError from '../errors/AppError';
 import { StatusCodes } from 'http-status-codes';
 import { TUserRole } from '../modules/user/user.interface';
+import { User } from '../modules/user/user.model';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization;
+    console.log(token);
+
     //if the token is sent to the client side
     if (!token) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'Your are not Authorized!');
     }
 
     //new add token verify
-    const decoded = jwt.verify(token, config.jwt_access_secret as string);
+    let decoded;
+    // console.log(decoded);
+    try {
+      decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+      ) as JwtPayload;
+    } catch (error) {
+      throw new AppError(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
 
-    const role = (decoded as JwtPayload)?.data?.role;
+    const { userEmail, role, iat, exp } = decoded;
+    // console.log(role);
+
+    const user = await User.isUserExistsByEmail(userEmail);
+
+    //checking user is exists
+    if (!user) {
+      throw new AppError(StatusCodes.NOT_FOUND, 'User is not found!');
+    }
+
     if (requiredRoles && !requiredRoles.includes(role)) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'Your are not Authorized!');
     }

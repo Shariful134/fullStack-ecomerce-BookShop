@@ -14,20 +14,29 @@ const blockedUserByAdminIntoDB = async (id: string) => {
     throw new AppError(StatusCodes.NOT_FOUND, 'User is not Found!');
   }
 
-  const isBlocked = user?.isBlocked;
-  if (isBlocked) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'User is Allready Blocked!');
-  }
+  // if (isBlocked) {
+  //   throw new AppError(StatusCodes.FORBIDDEN, 'User is Allready Blocked!');
+  // }
 
   if (user?.role === 'admin') {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid Credentials');
   }
+  const isBlocked = user?.isBlocked;
+  let result;
+  if (isBlocked) {
+    result = await User.findByIdAndUpdate(
+      id,
+      { isBlocked: false },
+      { new: true },
+    );
+  } else {
+    result = await User.findByIdAndUpdate(
+      id,
+      { isBlocked: true },
+      { new: true },
+    );
+  }
 
-  const result = await User.findByIdAndUpdate(
-    id,
-    { isBlocked: true },
-    { new: true },
-  );
   return result;
 };
 
@@ -41,6 +50,14 @@ const getAllUsersIntoDB = async () => {
 
 const getSingleUserIntoDB = async (id: string) => {
   const user = await User.findById(id);
+
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User is not Found!');
+  }
+  return user;
+};
+const deleteUserIntoDB = async (id: string) => {
+  const user = await User.findByIdAndDelete(id);
 
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User is not Found!');
@@ -101,6 +118,7 @@ export const bookServices = {
   blockedUserByAdminIntoDB,
   getAllUsersIntoDB,
   getSingleUserIntoDB,
+  deleteUserIntoDB,
   createBookIntoDB,
   getAllBooksIntoDB,
   getSingleBookIntoDB,

@@ -1,8 +1,12 @@
-import { model, Schema } from 'mongoose';
-import { TBook } from './book.interface';
+import { model, Schema, Types } from 'mongoose';
 
-const bookSchema = new Schema<TBook>(
+import { ObjectId } from 'mongodb';
+import { TCart } from './cart.interface';
+
+const cartSchema = new Schema<TCart>(
   {
+    bookId: { type: Types.ObjectId, ref: 'Book', required: true },
+    userId: { type: Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: true },
     author: { type: String, required: true },
     price: {
@@ -15,14 +19,10 @@ const bookSchema = new Schema<TBook>(
       enum: ['Fiction', 'Science', 'SelfDevelopment', 'Poetry', 'Religious'],
       required: true,
     },
-    description: { type: String, required: true },
     quantity: { type: Number, required: true },
-    inStock: { type: Boolean, default: true },
-    publicationDate: { type: String, required: true },
-    publisher: { type: String, required: true },
     imageURL: { type: String, required: true },
   },
   { timestamps: true },
 );
 
-export const Book = model<TBook>('Book', bookSchema);
+export const Cart = model<TCart>('Book', cartSchema);

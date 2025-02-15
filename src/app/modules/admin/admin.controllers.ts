@@ -10,10 +10,12 @@ const blockedUserController: RequestHandler = catchAsync(
   async (req, res, next) => {
     const { userId } = req.params;
     const result = await bookServices.blockedUserByAdminIntoDB(userId);
+    console.log(result?.isBlocked);
+    const isBlocked = result?.isBlocked;
     sendResponse(res, {
       statusCode: StatusCodes.CREATED,
       success: true,
-      message: 'User Blocked successfully!',
+      message: isBlocked ? 'Blocked successfully!' : ' Unblocked successfully!',
       data: result,
     });
   },
@@ -48,6 +50,16 @@ const getSingleUser: RequestHandler = catchAsync(async (req, res, next) => {
     statusCode: StatusCodes.CREATED,
     success: true,
     message: 'Users Retrived Successfully!',
+    data: result,
+  });
+});
+const deleteUser: RequestHandler = catchAsync(async (req, res, next) => {
+  const { userId } = req.params;
+  const result = await bookServices.deleteUserIntoDB(userId);
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'User Deleted Successfully!',
     data: result,
   });
 });
@@ -104,6 +116,7 @@ export const bookController = {
   blockedUserController,
   getAllUsers,
   getSingleUser,
+  deleteUser,
   createBook,
   deleteBook,
   getAllBooks,

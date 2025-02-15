@@ -14,12 +14,15 @@ class QueryBuilder<T> {
 
     if (search) {
       this.modelQuery = this.modelQuery.find({
-        $or: searchableFields.map(
-          (field) =>
-            ({
-              [field]: { $regex: search, $options: 'i' },
-            }) as FilterQuery<T>,
-        ),
+        $or: searchableFields.map((field) => {
+          if (field === 'inStock') {
+            return { [field]: search === 'true' };
+          }
+
+          return {
+            [field]: { $regex: search, $options: 'i' },
+          } as FilterQuery<T>;
+        }),
       });
     }
     return this;
@@ -28,18 +31,23 @@ class QueryBuilder<T> {
   filter() {
     const queryObj = { ...this.query };
 
-    //filtering
+    if (this.query.price) {
+      const price = Number(this.query.price);
+      if (!isNaN(price)) {
+        queryObj['price'] = { $lte: price };
+      }
+    }
+
+    if (this.query.price) {
+      const quantity = Number(this.query.price);
+      if (!isNaN(quantity)) {
+        queryObj['price'] = { $lte: quantity };
+      }
+    }
+
     const excludeFields = ['search', 'sortBy', 'sortOrder', 'filter'];
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    if (this.query.filter) {
-      const filterField = this.query.filter;
-      if (mongoose.Types.ObjectId.isValid(filterField as string)) {
-        queryObj['product'] = new mongoose.Types.ObjectId(
-          filterField as string,
-        );
-      }
-    }
     this.modelQuery = this.modelQuery.find(queryObj);
     return this;
   }
