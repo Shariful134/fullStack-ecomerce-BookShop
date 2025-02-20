@@ -18,6 +18,20 @@ const orderSchema = new Schema(
       required: true,
       min: [1, 'Quantity must be at least 1'],
     },
+    status: {
+      type: String,
+      enum: ['Pending', 'Paid', 'Shipped', 'Completed', 'Cancelled'],
+      default: 'Pending',
+    },
+    transaction: {
+      id: String,
+      transactionStatus: String,
+      date_time: String,
+      method: String,
+      sp_message: String,
+      sp_code: String,
+      bank_status: String,
+    },
     totalPrice: {
       type: Number,
       required: true,

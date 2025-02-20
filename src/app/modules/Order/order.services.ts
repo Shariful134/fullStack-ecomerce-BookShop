@@ -11,18 +11,19 @@ import {
 import { JwtPayload } from 'jsonwebtoken';
 import { CustomJwtPayload } from '../../interface';
 import { User } from '../user/user.model';
+import { orderUtils } from './order.utils';
 
 //creating order
-const createOrderIntoDB = async (userEmail: string, payload: TOrder) => {
+const createOrderIntoDB = async (
+  userEmail: string,
+  payload: TOrder,
+  client_ip: string,
+) => {
   const user = await User.findOne({ email: userEmail });
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User is not Found!');
   }
   const product = await Book.findById(payload.product);
-  let totalPrice = 0;
-  if (product) {
-    totalPrice = product.price * payload.quantity;
-  }
 
   //Inventory management logic
   if (!product) {
@@ -46,10 +47,66 @@ const createOrderIntoDB = async (userEmail: string, payload: TOrder) => {
     product.inStock = false;
   }
 
+  let totalPrice = 0;
+  if (product) {
+    totalPrice = product.price * payload.quantity;
+  }
   await product.save();
+  const payloads = { userEmail, ...payload, totalPrice };
 
-  const order = await Order.create(payload);
-  return { order, product, totalPrice, user };
+  let order = await Order.create(payloads);
+
+  // Payment integretation
+  const shurjopayPayload = {
+    amount: totalPrice,
+    order_id: order._id,
+    currency: 'BDT',
+    customer_name: user.name,
+    customer_address: 'N/a',
+    customer_email: user.email,
+    customer_phone: 'N/a',
+    customer_city: 'N/a',
+    client_ip,
+  };
+
+  const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
+  if (payment?.transactionStatus) {
+    order = await order.updateOne({
+      transaction: {
+        id: payment.sp_order_id,
+        transactionStatus: payment.transactionStatus,
+      },
+    });
+  }
+  return payment.checkout_url;
+};
+
+//verify order
+const verifyPayment = async (order_id: string) => {
+  const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
+  if (verifiedPayment.length) {
+    await Order.findOneAndUpdate(
+      { 'transaction.id': order_id },
+      {
+        'transaction.transactionStatus': verifiedPayment[0].transaction_status,
+        'transaction.date_time': verifiedPayment[0].date_time,
+        'transaction.method': verifiedPayment[0].method,
+        'transaction.sp_message': verifiedPayment[0].sp_message,
+        'transaction.sp_code': verifiedPayment[0].sp_code,
+        'transaction.bank_status': verifiedPayment[0].bank_status,
+        status:
+          verifiedPayment[0].bank_status == 'Success'
+            ? 'Paid'
+            : verifiedPayment[0].bank_status == 'Failed'
+              ? 'Pending'
+              : verifiedPayment[0].bank_status == 'Cancel'
+                ? 'Cancelled'
+                : '',
+      },
+    );
+  }
+
+  return verifiedPayment;
 };
 
 //get orders
@@ -140,6 +197,7 @@ const calculateAllPrice = async () => {
 
 export const orderServices = {
   createOrderIntoDB,
+  verifyPayment,
   updateOrderIntoDB,
   deleteOrderIntoDB,
   getOrdersIntoDB,

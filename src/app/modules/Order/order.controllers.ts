@@ -9,12 +9,27 @@ import { JwtPayload } from 'jsonwebtoken';
 const createOrder: RequestHandler = catchAsync(async (req, res, next) => {
   const { userEmail } = req.user;
 
-  const result = await orderServices.createOrderIntoDB(userEmail, req.body);
+  const result = await orderServices.createOrderIntoDB(
+    userEmail,
+    req.body,
+    req.ip!,
+  );
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
     message: 'Order Successful',
     data: result,
+  });
+});
+
+//payment verify
+const verifyPament: RequestHandler = catchAsync(async (req, res, next) => {
+  const order = await orderServices.verifyPayment(req.query.order_id as string);
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Order verifyed  Successful',
+    data: order,
   });
 });
 
@@ -78,6 +93,7 @@ const calculatePrice: RequestHandler = catchAsync(async (req, res, next) => {
 
 export const orderControllers = {
   createOrder,
+  verifyPament,
   updateOrder,
   deleteOrder,
   getOrders,
