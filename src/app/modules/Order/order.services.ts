@@ -8,10 +8,21 @@ import {
   bookSearchAbleFields,
   orderSearchAbleFields,
 } from '../Book/book.constant';
+import { JwtPayload } from 'jsonwebtoken';
+import { CustomJwtPayload } from '../../interface';
+import { User } from '../user/user.model';
 
 //creating order
-const createOrderIntoDB = async (payload: TOrder) => {
+const createOrderIntoDB = async (userEmail: string, payload: TOrder) => {
+  const user = await User.findOne({ email: userEmail });
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User is not Found!');
+  }
   const product = await Book.findById(payload.product);
+  let totalPrice = 0;
+  if (product) {
+    totalPrice = product.price * payload.quantity;
+  }
 
   //Inventory management logic
   if (!product) {
@@ -34,10 +45,11 @@ const createOrderIntoDB = async (payload: TOrder) => {
   if (product.quantity === 0) {
     product.inStock = false;
   }
+
   await product.save();
 
-  const result = await Order.create(payload);
-  return result;
+  const order = await Order.create(payload);
+  return { order, product, totalPrice, user };
 };
 
 //get orders

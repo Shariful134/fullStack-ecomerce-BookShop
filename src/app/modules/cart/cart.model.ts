@@ -25,4 +25,4 @@ const cartSchema = new Schema<TCart>(
   { timestamps: true },
 );
 
-export const Cart = model<TCart>('Book', cartSchema);
+export const Cart = model<TCart>('Cart', cartSchema);

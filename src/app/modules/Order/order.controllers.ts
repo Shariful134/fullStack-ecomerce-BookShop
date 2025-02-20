@@ -3,11 +3,13 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { StatusCodes } from 'http-status-codes';
 import { orderServices } from './order.services';
+import { JwtPayload } from 'jsonwebtoken';
 
 //create ordaer
 const createOrder: RequestHandler = catchAsync(async (req, res, next) => {
-  console.log(req.cookies);
-  const result = await orderServices.createOrderIntoDB(req.body);
+  const { userEmail } = req.user;
+
+  const result = await orderServices.createOrderIntoDB(userEmail, req.body);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,

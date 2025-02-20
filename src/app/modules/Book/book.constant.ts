@@ -4,4 +4,11 @@ export const bookSearchAbleFields = [
   'category',
   'description',
 ];
-export const orderSearchAbleFields = ['email'];
+export const orderSearchAbleFields = [
+  'email',
+  'price',
+  'category',
+  'title',
+  'author',
+];
+export const userSearchAbleFields = ['email', 'name'];

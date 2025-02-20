@@ -20,23 +20,13 @@ router.get('/get-cart', cartController.getAllCart);
 router.get('/get-cart/:id', cartController.getSingleCart);
 
 //update cart
-//create Book
+
 router.put(
   '/update-cart/:id',
 
   validateRequest(cartValidationSchemas.updateCartValidationShema),
   cartController.updateCart,
 );
-// router.put(
-//   '/book/:id',
-//   auth(USER_ROLE.admin),
-//   validateRequest(BookValidationSchemas.updateValidationShema),
-//   bookController.updateBook,
-// );
-// //delete Bocart
-// router.delete(
-//   '/delete-book/:id',
-//   auth(USER_ROLE.admin),
-//   bookController.deleteBook,
-// );
+router.delete('/delete-cart/:id', cartController.deleteCart);
+
 export const cartRoutes = router;

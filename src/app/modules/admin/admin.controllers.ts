@@ -34,7 +34,7 @@ const createBook: RequestHandler = catchAsync(async (req, res, next) => {
 
 //get All Users
 const getAllUsers: RequestHandler = catchAsync(async (req, res, next) => {
-  const result = await bookServices.getAllUsersIntoDB();
+  const result = await bookServices.getAllUsersIntoDB(req.query);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,

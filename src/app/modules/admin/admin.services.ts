@@ -4,7 +4,10 @@ import { TBook } from '../Book/book.interface';
 import { Book } from '../Book/book.model';
 import { User } from '../user/user.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { bookSearchAbleFields } from '../Book/book.constant';
+import {
+  bookSearchAbleFields,
+  userSearchAbleFields,
+} from '../Book/book.constant';
 
 ///blocked user
 const blockedUserByAdminIntoDB = async (id: string) => {
@@ -41,11 +44,14 @@ const blockedUserByAdminIntoDB = async (id: string) => {
 };
 
 //Get All Users
-const getAllUsersIntoDB = async () => {
-  const result = await User.find();
+const getAllUsersIntoDB = async (query: Record<string, unknown>) => {
+  const result = new QueryBuilder(User.find({ role: 'user' }), query)
+    .search(userSearchAbleFields)
+    .filter()
+    .sort()
+    .exec();
 
-  const users = result?.filter((item) => item.role === 'user');
-  return users;
+  return result;
 };
 
 const getSingleUserIntoDB = async (id: string) => {

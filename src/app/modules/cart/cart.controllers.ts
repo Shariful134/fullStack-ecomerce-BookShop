@@ -48,9 +48,22 @@ const updateCart = catchAsync(async (req, res, next) => {
   });
 });
 
+//delte Cart
+const deleteCart = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const result = await cartServices.deleteCartIntoBD(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    success: true,
+    message: 'Cart Delted  successfully!',
+    data: result,
+  });
+});
+
 export const cartController = {
   createCart,
   getAllCart,
   getSingleCart,
   updateCart,
+  deleteCart,
 };

@@ -4,12 +4,12 @@ import { TCart } from './cart.interface';
 import { Cart } from './cart.model';
 
 const createCartIntoDB = async (payload: TCart) => {
-  const result = await Cart.create();
+  const result = await Cart.create(payload);
 
   return result;
 };
 const getCartIntoDB = async () => {
-  const result = await Cart.find();
+  const result = await Cart.find().populate('bookId').populate('userId');
   if (result?.length === 0) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Cart is not found');
   }
@@ -17,7 +17,7 @@ const getCartIntoDB = async () => {
 };
 
 const getSingleCartIntoDB = async (id: string) => {
-  const result = await Cart.findById(id);
+  const result = await Cart.findById(id).populate('bookId').populate('userId');
   if (!result) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Cart is not found');
   }
@@ -36,9 +36,19 @@ const updateCartIntoDB = async (
   return result;
 };
 
+//delete cart
+const deleteCartIntoBD = async (id: string) => {
+  const result = await Cart.findByIdAndDelete(id);
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Cart is not found');
+  }
+  return result;
+};
+
 export const cartServices = {
   createCartIntoDB,
   getCartIntoDB,
   getSingleCartIntoDB,
   updateCartIntoDB,
+  deleteCartIntoBD,
 };

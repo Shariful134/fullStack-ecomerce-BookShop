@@ -6,3 +6,5 @@ export type TDecoded = {
   iat: number;
   exp: number;
 };
+
+export const userSearchFields = [];

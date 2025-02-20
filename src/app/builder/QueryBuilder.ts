@@ -59,6 +59,9 @@ class QueryBuilder<T> {
 
     return this;
   }
+  async exec() {
+    return await this.modelQuery.lean().exec();
+  }
 }
 
 export default QueryBuilder;
