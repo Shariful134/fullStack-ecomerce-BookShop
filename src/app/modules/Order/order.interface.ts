@@ -4,6 +4,8 @@ export type TOrder = {
   email: string;
   product: ObjectId;
   quantity: number;
+  address: string;
+  phone: string;
   transaction: {
     id: string;
     transactionStatus: string;

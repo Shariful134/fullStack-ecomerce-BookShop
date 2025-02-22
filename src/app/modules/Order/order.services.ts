@@ -62,11 +62,13 @@ const createOrderIntoDB = async (
     order_id: order._id,
     currency: 'BDT',
     customer_name: user.name,
-    customer_address: 'N/a',
+    customer_address: payloads.address,
     customer_email: user.email,
-    customer_phone: 'N/a',
+    customer_phone: payloads.phone,
     customer_city: 'N/a',
     client_ip,
+    customer_state: order._id,
+    shipping_address: product.title,
   };
 
   const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
@@ -125,8 +127,10 @@ const getOrdersIntoDB = async (query: Record<string, any>) => {
   return order;
 };
 
-const getSingleOrderIntoDB = async (id: string) => {
-  const order = await Order.findById(id).populate('product');
+const getSingleOrderIntoDB = async (orderId: string) => {
+  const order = await Order.findOne({ 'transaction.id': orderId }).populate(
+    'product',
+  );
 
   //checking Product is exists
   if (!order) {

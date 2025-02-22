@@ -7,7 +7,6 @@ const router = express.Router();
 router.post(
   '/create-order',
   auth(USER_ROLE.user),
-
   orderControllers.createOrder,
 );
 

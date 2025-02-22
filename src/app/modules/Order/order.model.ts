@@ -13,6 +13,15 @@ const orderSchema = new Schema(
       ref: 'Book',
       required: true,
     },
+    address: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: Number,
+      min: [11, 'Number must be at least 11'],
+      requried: true,
+    },
     quantity: {
       type: Number,
       required: true,
