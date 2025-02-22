@@ -25,6 +25,11 @@ router.get(
   auth(USER_ROLE.user, USER_ROLE.admin),
   orderControllers.getSingleOrder,
 );
+router.get(
+  '/getOrder/:userEmail',
+  auth(USER_ROLE.user, USER_ROLE.admin),
+  orderControllers.getSingleOrderForEmail,
+);
 
 //update order
 router.put(

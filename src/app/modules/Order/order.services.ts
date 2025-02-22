@@ -127,6 +127,17 @@ const getOrdersIntoDB = async (query: Record<string, any>) => {
   return order;
 };
 
+const getSingleOrderForEmailIntoDB = async (email: string) => {
+  const order = await Order.find({ email: email }).populate('product');
+
+  //checking Product is exists
+  if (!order.length) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Order is not Found!');
+  }
+
+  return order;
+};
+
 const getSingleOrderIntoDB = async (orderId: string) => {
   const order = await Order.findOne({ 'transaction.id': orderId }).populate(
     'product',
@@ -200,6 +211,7 @@ const calculateAllPrice = async () => {
 };
 
 export const orderServices = {
+  getSingleOrderForEmailIntoDB,
   createOrderIntoDB,
   verifyPayment,
   updateOrderIntoDB,

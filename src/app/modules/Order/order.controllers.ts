@@ -44,6 +44,19 @@ const getOrders: RequestHandler = catchAsync(async (req, res, next) => {
   });
 });
 
+const getSingleOrderForEmail: RequestHandler = catchAsync(
+  async (req, res, next) => {
+    const { userEmail } = req.params;
+    const result = await orderServices.getSingleOrderForEmailIntoDB(userEmail);
+    sendResponse(res, {
+      statusCode: StatusCodes.CREATED,
+      success: true,
+      message: 'Order Retrieved Successful',
+      data: result,
+    });
+  },
+);
+
 const getSingleOrder: RequestHandler = catchAsync(async (req, res, next) => {
   const { orderId } = req.params;
   const result = await orderServices.getSingleOrderIntoDB(orderId);
@@ -93,6 +106,7 @@ const calculatePrice: RequestHandler = catchAsync(async (req, res, next) => {
 
 export const orderControllers = {
   createOrder,
+  getSingleOrderForEmail,
   verifyPament,
   updateOrder,
   deleteOrder,
