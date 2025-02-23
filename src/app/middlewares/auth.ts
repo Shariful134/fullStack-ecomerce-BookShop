@@ -7,6 +7,7 @@ import AppError from '../errors/AppError';
 import { StatusCodes } from 'http-status-codes';
 import { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
+import { CustomJwtPayload } from '../interface';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -25,13 +26,13 @@ const auth = (...requiredRoles: TUserRole[]) => {
       decoded = jwt.verify(
         token,
         config.jwt_access_secret as string,
-      ) as JwtPayload;
+      ) as CustomJwtPayload;
     } catch (error) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
 
     const { userEmail, role, iat, exp } = decoded;
-    // console.log(role);
+    console.log(role);
 
     const user = await User.isUserExistsByEmail(userEmail);
 
@@ -40,10 +41,10 @@ const auth = (...requiredRoles: TUserRole[]) => {
       throw new AppError(StatusCodes.NOT_FOUND, 'User is not found!');
     }
 
-    if (requiredRoles && !requiredRoles.includes(role)) {
+    if (requiredRoles && !requiredRoles.includes(role as TUserRole)) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'Your are not Authorized!');
     }
-    req.user = decoded as JwtPayload;
+    req.user = decoded;
     next();
   });
 };

@@ -2,7 +2,7 @@ import { JwtPayload } from 'jsonwebtoken';
 
 export interface CustomJwtPayload extends JwtPayload {
   userEmail: string;
-  role: string[];
+  role: string;
 }
 
 declare global {
