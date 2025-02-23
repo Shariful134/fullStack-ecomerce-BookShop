@@ -5,7 +5,7 @@ import { TUserLogin } from './auth.interface';
 import jwt from 'jsonwebtoken';
 
 import config from '../../config';
-import { createToken, verifyToken } from './auth.utils';
+import { verifyToken } from './auth.utils';
 
 //login User
 const loginUserIntoDB = async (payload: TUserLogin) => {
@@ -32,17 +32,28 @@ const loginUserIntoDB = async (payload: TUserLogin) => {
     role: user.role,
   };
 
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwt_access_secret as string,
-    config.jwt_access_expire_in as string,
-  );
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
+    expiresIn: '1h',
+  });
 
-  const refreshToken = createToken(
+  // const accessToken = createToken(
+  //   jwtPayload,
+  //   config.jwt_access_secret as string,
+  //   config.jwt_access_expire_in as string,
+  // );
+
+  const refreshToken = jwt.sign(
     jwtPayload,
     config.jwt_refresh_secret as string,
-    config.jwt_refresh_expire_in as string,
+    {
+      expiresIn: '1h',
+    },
   );
+  // const refreshToken = createToken(
+  //   jwtPayload,
+  //   config.jwt_refresh_secret as string,
+  //   config.jwt_refresh_expire_in as string,
+  // );
 
   return { accessToken, refreshToken };
 };
@@ -76,11 +87,14 @@ const refreshTokenIntoDB = async (token: string) => {
   };
 
   //accessToken
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwt_access_secret as string,
-    config.jwt_access_expire_in as string,
-  );
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
+    expiresIn: '10d',
+  });
+  // const accessToken = createToken(
+  //   jwtPayload,
+  //   config.jwt_access_secret as string,
+  //   config.jwt_access_expire_in as string,
+  // );
 
   return { accessToken };
 };
