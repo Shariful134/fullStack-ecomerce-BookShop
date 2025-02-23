@@ -11,7 +11,12 @@ const app: Application = express();
 app.use(express.json());
 app.use(cookiePerser());
 
-app.use(cors({ origin: ['http://localhost:5173'], credentials: true }));
+app.use(
+  cors({
+    origin: ['https://book-shop-server-ecru.vercel.app/'],
+    credentials: true,
+  }),
+);
 
 //application routes
 app.use('/api/v1/', router);
